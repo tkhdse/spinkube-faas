@@ -1,68 +1,30 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Rejoin this host as a fresh k3s worker.
-# Usage:
-#   sudo ./rejoin-k3s-worker.sh \
-#     --server https://<CONTROL_PLANE_IP>:6443 \
-#     --token <NODE_TOKEN> \
-#     [--data-dir /srv/k3s]
+# Rejoin THIS host as k3s worker using DEFAULT data dir.
+# Required env:
+#   K3S_URL=https://<control-plane-ip>:6443
+#   K3S_TOKEN=<node-token>
 #
-# Example:
-#   sudo ./rejoin-k3s-worker.sh \
-#     --server https://172.22.152.174:6443 \
-#     --token K10abc...::server:xyz \
-#     --data-dir /srv/k3s
+# Usage:
+#   sudo K3S_URL=... K3S_TOKEN=... ./rejoin_node_default.sh
 
-SERVER_URL=""
-NODE_TOKEN=""
-DATA_DIR="/srv/k3s"
+[[ -n "${K3S_URL:-}" ]] || { echo "K3S_URL is required"; exit 1; }
+[[ -n "${K3S_TOKEN:-}" ]] || { echo "K3S_TOKEN is required"; exit 1; }
 
-while [[ $# -gt 0 ]]; do
-  case "$1" in
-    --server)
-      SERVER_URL="${2:-}"; shift 2 ;;
-    --token)
-      NODE_TOKEN="${2:-}"; shift 2 ;;
-    --data-dir)
-      DATA_DIR="${2:-}"; shift 2 ;;
-    -h|--help)
-      echo "Usage: $0 --server <https://IP:6443> --token <node-token> [--data-dir /srv/k3s]"
-      exit 0 ;;
-    *)
-      echo "Unknown arg: $1" >&2
-      exit 1 ;;
-  esac
-done
+echo "[1/5] stopping old agent"
+sudo systemctl disable --now k3s-agent 2>/dev/null || true
+sudo /usr/local/bin/k3s-agent-uninstall.sh 2>/dev/null || true
 
-if [[ -z "$SERVER_URL" || -z "$NODE_TOKEN" ]]; then
-  echo "ERROR: --server and --token are required." >&2
-  exit 1
-fi
+echo "[2/5] cleaning old state"
+sudo rm -rf /etc/rancher/k3s /srv/k3s /var/lib/rancher/k3s /var/lib/kubelet /var/lib/cni /etc/cni/net.d
 
-if [[ $EUID -ne 0 ]]; then
-  echo "ERROR: run as root (sudo)." >&2
-  exit 1
-fi
+echo "[3/5] installing k3s agent with DEFAULT data-dir"
+curl -sfL https://get.k3s.io | K3S_URL="${K3S_URL}" K3S_TOKEN="${K3S_TOKEN}" sh -s - agent
 
-echo "==> Stopping old k3s agent if present"
-systemctl disable --now k3s-agent 2>/dev/null || true
-/usr/local/bin/k3s-agent-uninstall.sh 2>/dev/null || true
+echo "[4/5] enabling agent"
+sudo systemctl enable --now k3s-agent
 
-echo "==> Cleaning stale k3s/kubelet/cni state"
-rm -rf /etc/rancher/k3s \
-       /var/lib/rancher/k3s \
-       /var/lib/kubelet \
-       /var/lib/cni \
-       /etc/cni/net.d \
-       "$DATA_DIR"
-
-echo "==> Installing/rejoining k3s agent"
-curl -sfL https://get.k3s.io | K3S_URL="$SERVER_URL" K3S_TOKEN="$NODE_TOKEN" sh -s - agent --data-dir "$DATA_DIR"
-
-echo "==> Enabling and starting agent"
-systemctl enable --now k3s-agent
-
-echo "==> Local verification"
-systemctl --no-pager --full status k3s-agent | sed -n '1,25p' || true
-echo "Rejoin complete for host: $(hostname -f)"
+echo "[5/5] local verify"
+sudo systemctl --no-pager --full status k3s-agent | sed -n '1,25p'
+echo "OK: rejoin complete on $(hostname -f)"
