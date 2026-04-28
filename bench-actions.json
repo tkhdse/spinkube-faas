@@ -1,0 +1,14 @@
+{
+    "namespace": "bench",
+    "executor": "containerd-shim-spin",
+    "replicas": 1,
+    "actions": {
+      "bench_float": "ghcr.io/<you>/bench-float:v1",
+      "bench_json": "ghcr.io/<you>/bench-json:v1",
+      "bench_chameleon": "ghcr.io/<you>/bench-chameleon:v1",
+      "bench_aes": "ghcr.io/<you>/bench-aes:v1",
+      "bench_gzip": "ghcr.io/<you>/bench-gzip:v1",
+      "bench_disk_seq": "ghcr.io/<you>/bench-disk-seq:v1",
+      "bench_disk_rand": "ghcr.io/<you>/bench-disk-rand:v1"
+    }
+  }
