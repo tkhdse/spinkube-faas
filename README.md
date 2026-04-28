@@ -23,6 +23,6 @@ sudo ./setup_server.sh
 
 # OR
 
-sudo ./setup_worker.sh
+sudo ./setup_worker.sh --server-url https://<server-ip>:6443 --token '<token-from-server>'
 ```
 
