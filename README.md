@@ -16,3 +16,13 @@ Verify on server:
 ```
 sudo k3s kubectl get nodes -o wide
 ```
+
+After setting up appropriate server and worker nodes, depending on the node, run either command:
+```
+sudo ./setup_server.sh
+
+# OR
+
+sudo ./setup_worker.sh
+```
+
