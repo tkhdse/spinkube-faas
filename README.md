@@ -1,23 +1,23 @@
 # spinkube-faas
 Spinkube-based platform to benchmark against WarmWhisk.
 
-On control-plane machine:
+1a. On control-plane machine:
 ```
 sudo ./k3s-bootstrap.sh server
 ```
 
-On each worker machine:
+1b. On each worker machine:
 ```
 sudo ./k3s-bootstrap.sh agent --server-url https://<server-ip>:6443 --token '<token-from-server>'
 ```
 
 
-Verify on server:
+1c. Verify on server:
 ```
 sudo k3s kubectl get nodes -o wide
 ```
 
-After setting up appropriate server and worker nodes, depending on the node, run either command:
+2. After setting up appropriate server and worker nodes, depending on the node, run either command:
 ```
 sudo ./setup_server.sh
 
@@ -25,4 +25,3 @@ sudo ./setup_server.sh
 
 sudo ./setup_worker.sh --server-url https://<server-ip>:6443 --token '<token-from-server>'
 ```
-
