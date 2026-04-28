@@ -1,14 +1,14 @@
 {
   "namespace": "bench",
   "executor": "containerd-shim-spin",
-  "replicas": 1,
+  "replicas": 3,
   "actions": {
-    "bench-float": "ghcr.io/tkhadse2/bench-float:v1",
-    "bench-json": "ghcr.io/tkhadse2/bench-json:v1",
-    "bench-chameleon": "ghcr.io/tkhadse2/bench-chameleon:v1",
-    "bench-aes": "ghcr.io/tkhadse2/bench-aes:v1",
-    "bench-gzip": "ghcr.io/tkhadse2/bench-gzip:v1",
-    "bench-disk-seq": "ghcr.io/tkhadse2/bench-disk-seq:v1",
-    "bench-disk-rand": "ghcr.io/tkhadse2/bench-disk-rand:v1"
+    "bench-float": "ghcr.io/tkhdse/bench-float:v1",
+    "bench-json": "ghcr.io/tkhdse/bench-json:v1",
+    "bench-chameleon": "ghcr.io/tkhdse/bench-chameleon:v1",
+    "bench-aes": "ghcr.io/tkhdse/bench-aes:v1",
+    "bench-gzip": "ghcr.io/tkhdse/bench-gzip:v1",
+    "bench-disk-seq": "ghcr.io/tkhdse/bench-disk-seq:v1",
+    "bench-disk-rand": "ghcr.io/tkhdse/bench-disk-rand:v1"
   }
-}
+} 
