@@ -1,14 +1,14 @@
 {
-    "namespace": "bench",
-    "executor": "containerd-shim-spin",
-    "replicas": 1,
-    "actions": {
-      "bench_float": "ghcr.io/<you>/bench-float:v1",
-      "bench_json": "ghcr.io/<you>/bench-json:v1",
-      "bench_chameleon": "ghcr.io/<you>/bench-chameleon:v1",
-      "bench_aes": "ghcr.io/<you>/bench-aes:v1",
-      "bench_gzip": "ghcr.io/<you>/bench-gzip:v1",
-      "bench_disk_seq": "ghcr.io/<you>/bench-disk-seq:v1",
-      "bench_disk_rand": "ghcr.io/<you>/bench-disk-rand:v1"
-    }
+  "namespace": "bench",
+  "executor": "containerd-shim-spin",
+  "replicas": 1,
+  "actions": {
+    "bench-float": "ghcr.io/tkhadse2/bench-float:v1",
+    "bench-json": "ghcr.io/tkhadse2/bench-json:v1",
+    "bench-chameleon": "ghcr.io/tkhadse2/bench-chameleon:v1",
+    "bench-aes": "ghcr.io/tkhadse2/bench-aes:v1",
+    "bench-gzip": "ghcr.io/tkhadse2/bench-gzip:v1",
+    "bench-disk-seq": "ghcr.io/tkhadse2/bench-disk-seq:v1",
+    "bench-disk-rand": "ghcr.io/tkhadse2/bench-disk-rand:v1"
   }
+}

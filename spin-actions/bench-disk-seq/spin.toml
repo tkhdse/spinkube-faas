@@ -1,0 +1,20 @@
+#:schema https://schemas.spinframework.dev/spin/manifest-v2/latest.json
+
+spin_manifest_version = 2
+
+[application]
+name = "bench-disk-seq"
+version = "0.1.0"
+authors = ["tkhadse2"]
+description = ""
+
+[[trigger.http]]
+route = "/..."
+component = "bench-disk-seq"
+
+[component.bench-disk-seq]
+source = "target/wasm32-wasip1/release/bench_disk_seq.wasm"
+allowed_outbound_hosts = []
+[component.bench-disk-seq.build]
+command = "cargo build --target wasm32-wasip1 --release"
+watch = ["src/**/*.rs", "Cargo.toml"]
