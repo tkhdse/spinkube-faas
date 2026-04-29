@@ -50,3 +50,20 @@ kubectl apply -f https://github.com/spinframework/spin-operator/releases/downloa
 ```
 
 At this point, the cluster creates a serverless platform. Now we need to enable runtime/execution logic. 
+
+
+
+
+
+### Action Registration and Invocation
+```
+./register_spinkube.sh bench-actions.json
+
+# verify with the following:
+kubectl -n bench get spinapps,deploy,svc
+kubectl -n bench get pods -o wide
+
+# deploy -> AVAILABLE
+# pods -> Running
+# NODE column should show placements across 1805/1811/1812 (with replicas: 3)
+```
