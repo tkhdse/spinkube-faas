@@ -55,7 +55,7 @@ At this point, the cluster creates a serverless platform. Now we need to enable 
 
 
 
-### Action Registration and Invocation
+# Action Registration and Invocation
 ```
 ./register_spinkube.sh bench-actions.json
 
