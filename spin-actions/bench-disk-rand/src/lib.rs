@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use spin_sdk::http::{IntoResponse, Request, Response};
 use spin_sdk::http_component;
 use std::fs::{self, File, OpenOptions};
-use std::io::{Read, Seek, SeekFrom, Write};
+// use std::io::{Read, Seek, SeekFrom, Write};
 
 #[derive(Deserialize)]
 struct Input {
@@ -63,49 +63,39 @@ impl Lcg64 {
 fn handle(req: Request) -> Result<impl IntoResponse> {
     let input: Input = serde_json::from_slice(req.body())?;
     let total_bytes = input.file_size * 1024 * 1024;
-    let block_size = input.byte_size;
-    let num_blocks = total_bytes / block_size;
-    let path = "./bench_disk_rand.bin";
-
+    let block_size = input.byte_size.max(1);
+    let num_blocks = (total_bytes / block_size).max(1);
+    
     let mut rng = Lcg64::new();
     let mut block = vec![0u8; block_size];
     fill_bytes(&mut block);
-
-    {
-        let mut f = File::create(path)?;
-        for _ in 0..num_blocks {
-            f.write_all(&block)?;
-        }
-        f.flush()?;
-    }
-
+    
+    // Initialize storage
+    let mut storage = vec![0u8; num_blocks * block_size];
+    
+    // Random write pass
     let write_start = std::time::Instant::now();
-    {
-        let mut f = OpenOptions::new().write(true).open(path)?;
-        for _ in 0..num_blocks {
-            let offset = (rng.gen_below(num_blocks) * block_size) as u64;
-            f.seek(SeekFrom::Start(offset))?;
-            f.write_all(&block)?;
-        }
-        f.flush()?;
+    for _ in 0..num_blocks {
+        let idx = rng.gen_below(num_blocks);
+        let off = idx * block_size;
+        storage[off..off + block_size].copy_from_slice(&block);
     }
     let write_elapsed_ms = elapsed_ms(write_start);
-
+    
+    // Random read pass
     let read_start = std::time::Instant::now();
-    {
-        let mut f = File::open(path)?;
-        let mut buf = vec![0u8; block_size];
-        let mut total_read = 0usize;
-        for _ in 0..num_blocks {
-            let offset = (rng.gen_below(num_blocks) * block_size) as u64;
-            f.seek(SeekFrom::Start(offset))?;
-            total_read += f.read(&mut buf)?;
-        }
-        black_box(total_read);
+    let mut total_read = 0usize;
+    let mut scratch = vec![0u8; block_size];
+    for _ in 0..num_blocks {
+        let idx = rng.gen_below(num_blocks);
+        let off = idx * block_size;
+        scratch.copy_from_slice(&storage[off..off + block_size]);
+        total_read += block_size;
     }
+    black_box(total_read);
     let read_elapsed_ms = elapsed_ms(read_start);
 
-    let _ = fs::remove_file(path);
+    // let _ = fs::remove_file(path);
     let out = Output {
         write_elapsed_ms,
         read_elapsed_ms,

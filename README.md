@@ -67,3 +67,30 @@ kubectl -n bench get pods -o wide
 # pods -> Running
 # NODE column should show placements across 1805/1811/1812 (with replicas: 3)
 ```
+
+
+# Endpoints
+Each of these must be run in a separate terminal. We can expose metric/observability endpoints from these endpoints.
+
+
+
+```
+# Prometheus UI (PromQL): (accessed via http://127.0.0.1:9090)
+kubectl -n monitoring port-forward svc/kube-prom-kube-prometheus-prometheus 9090:9090
+
+# to view locally (on another machine):
+# ssh -L 9090:127.0.0.1:9090 \
+#     -L 9464:127.0.0.1:9464 \
+#     user@address
+#
+
+
+# Grafana: (accessed via http://127.0.0.1:3000)
+kubectl -n monitoring port-forward svc/kube-prom-grafana 3000:80
+
+
+# OTel Colelctor Prometheus exporter (raw spanmetrics): 
+kubectl -n default port-forward svc/otel-collector-opentelemetry-collector 9464:9464
+# verify:
+# curl -s http://127.0.0.1:9464/metrics | rg traces_spanmetrics | head
+```

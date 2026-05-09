@@ -1,0 +1,11 @@
+apiVersion: core.spinkube.dev/v1alpha1
+kind: SpinAppExecutor
+metadata:
+  name: otel-shim-executor
+spec:
+  createDeployment: true
+  deploymentConfig:
+    runtimeClassName: wasmtime-spin-v2
+    installDefaultCACerts: true
+    otel:
+      exporter_otlp_endpoint: http://otel-collector-opentelemetry-collector.default.svc.cluster.local:4318
